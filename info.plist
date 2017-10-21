@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.oursky.ben.toggl</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>0FD61912-3723-4800-8990-00D114C7002D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>0FD61912-3723-4800-8990-00D114C7002D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>8496C0F7-25A4-414F-9C2D-7FEE03A3A403</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>C5D900E9-15B5-42CF-8E9F-CF0C9A57D0C3</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>C721EA4B-97FF-4184-81D3-F44BFB265CC6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C3C53F4E-675E-44EF-AB27-2185DE0FD088</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Ben Cheng</string>
+	<key>description</key>
+	<string>Toggl integration with Things and Google Calendar</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Toggl x Things x Google Calendar</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>tm</string>
+				<key>subtext</key>
+				<string>What's your task?</string>
+				<key>text</key>
+				<string>Start Tasks</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>import sys
+import requests
+import json
+
+query = sys.argv[1]
+cmd = query.strip().lower()
+
+tapi = ('change-me','api_token')
+theader = {"Content-Type": "application/json"}
+
+if cmd == 'stop':
+  r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
+  tid = r.json()["data"]["id"]
+  r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
+  print "Task Stopped"
+elif cmd == 'break':
+  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": "Break", "pid":57765022, "created_with":"alfred"}}))
+  print "In a Break"
+else:
+  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": query, "created_with":"alfred"}}))
+  print "Run: " + query</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>keyword</key>
+				<string>tmp</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Please Wait</string>
+				<key>script</key>
+				<string>on run argv
+	set theQuery to item 1 of argv
+	tell application "Things3"
+		set inboxToDos to to dos of list "Today"
+	end tell
+
+	set jsonArray to ""
+		repeat with inboxToDo in inboxToDos
+			set taskName to name of inboxToDo
+			if taskName starts with theQuery or theQuery is equal to "" then
+				set jsonText to "{\"title\": \"" &amp; taskName &amp; "\", \"arg\": \"" &amp; taskName &amp; "\", \"autocomplete\": \"" &amp; taskName &amp; "\"}"				set jsonArray to jsonArray &amp; jsonText &amp; ","
+			end if
+		end repeat
+		set jsonResult to "{\"items\": [" &amp; jsonArray &amp; "]}"
+	
+	return jsonResult
+end run</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Start a task from Things 3 Today</string>
+				<key>title</key>
+				<string>Start a task from Things 3 Today</string>
+				<key>type</key>
+				<integer>6</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>8496C0F7-25A4-414F-9C2D-7FEE03A3A403</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Toggl</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>C3C53F4E-675E-44EF-AB27-2185DE0FD088</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>tmc</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading from Google Calendar...</string>
+				<key>script</key>
+				<string>python cal_today.py "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Add Timing Entries from Today's Calendar Item</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>C5D900E9-15B5-42CF-8E9F-CF0C9A57D0C3</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Toggl</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>import requests
+
+tapi = ('change-me','api_token')
+r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
+tid = r.json()["data"]["id"]
+r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
+print "Task stopped"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>0FD61912-3723-4800-8990-00D114C7002D</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>tms</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Stop Tasks</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>This simple workflow lets you add tasks to to-do lists, using a separate text file for each list.
+
+Type "todo" followed by your task, then choose a to-do list, or type "vtodo" to view the list of your choice.
+
+CHANGING DEFAULTS
+
+To-do lists location: The workflow saves your to-do lists in ~/Documents/Alfred/todos/ but you can change the path in the Workflow Environment Variables window.
+
+Lists names: These are "Work", "Home" and "Waiting For" by default. You can change them in the List Filter object within the workflow.</string>
+	<key>uidata</key>
+	<dict>
+		<key>0FD61912-3723-4800-8990-00D114C7002D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>370</integer>
+			<key>ypos</key>
+			<integer>460</integer>
+		</dict>
+		<key>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>460</integer>
+		</dict>
+		<key>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</key>
+		<dict>
+			<key>xpos</key>
+			<integer>580</integer>
+			<key>ypos</key>
+			<integer>460</integer>
+		</dict>
+		<key>8496C0F7-25A4-414F-9C2D-7FEE03A3A403</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>170</integer>
+		</dict>
+		<key>C3C53F4E-675E-44EF-AB27-2185DE0FD088</key>
+		<dict>
+			<key>xpos</key>
+			<integer>580</integer>
+			<key>ypos</key>
+			<integer>170</integer>
+		</dict>
+		<key>C5D900E9-15B5-42CF-8E9F-CF0C9A57D0C3</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>310</integer>
+		</dict>
+		<key>C721EA4B-97FF-4184-81D3-F44BFB265CC6</key>
+		<dict>
+			<key>xpos</key>
+			<integer>370</integer>
+			<key>ypos</key>
+			<integer>170</integer>
+		</dict>
+		<key>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>30</integer>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<dict>
+		<key>path</key>
+		<string>~/Documents/Alfred/todos/</string>
+	</dict>
+	<key>version</key>
+	<string>1.0</string>
+	<key>webaddress</key>
+	<string>https://oursky.com</string>
+</dict>
+</plist>
