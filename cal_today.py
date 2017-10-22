@@ -1,47 +1,55 @@
 from __future__ import print_function
 import httplib2
-import os
+import urlparse
+import webbrowser
+import BaseHTTPServer
 import json
 import sys
+import random
 
 from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
-from oauth2client.file import Storage
+from oauth2client.client import OAuth2WebServerFlow
+from oauth2client.contrib.keyring_storage import Storage
 
 import datetime
 
-# If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/calendar-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Google Calendar API Python Quickstart'
-
+CLIENT_ID = \
+    '32073141474-eobhusq49kiumme0rf2bn9386d0grmsq.apps.googleusercontent.com'
+CLIENT_SECRET = '7u9MmKu37g2qbusjfT-wVReT'
+AUTH_RETURNED = False
 
 def get_credentials():
-    """Gets valid user credentials from storage.
-
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-
-    Returns:
-        Credentials, the obtained credential.
-    """
-    home_dir = os.path.expanduser('~')
-    credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'calendar-python-quickstart.json')
-
-    store = Storage(credential_path)
+    store = Storage("com.oursky.ben.toggl", "Google Calendar")
     credentials = store.get()
     if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-        flow.user_agent = APPLICATION_NAME
-        credentials = tools.run(flow, store)
-        print('Storing credentials to ' + credential_path)
+        port = random.randint(2000, 8000)
+
+        class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+            def do_GET(s):
+                s.send_response(200)
+                s.send_header("Content-type", "text/html")
+                s.end_headers()
+                try:
+                    code = urlparse.parse_qs(urlparse.urlparse(s.path).query)["code"][0]
+                    credentials = flow.step2_exchange(code)
+                    store.put(credentials)
+                    s.wfile.write("Done with Toggl Alfred Workflow Auth")
+                except Exception as e:
+                    s.wfile.write("Something wrong: " + e.message)
+                global AUTH_RETURNED
+                AUTH_RETURNED = True
+        httpd = BaseHTTPServer.HTTPServer(("127.0.0.1", port), Handler)
+        flow = OAuth2WebServerFlow(client_id=CLIENT_ID,
+                                   client_secret=CLIENT_SECRET,
+                                   scope=SCOPES,
+                                   redirect_uri="http://127.0.0.1:"+str(port))
+        auth_uri = flow.step1_get_authorize_url()
+        webbrowser.open_new(auth_uri)
+        while not AUTH_RETURNED:
+            httpd.handle_request()
     return credentials
+
 
 def main():
     query = None
@@ -52,7 +60,7 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
     tmpNow = datetime.datetime.utcnow()
     endofday = datetime.datetime(year=tmpNow.year,

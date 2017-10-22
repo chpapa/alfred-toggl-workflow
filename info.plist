@@ -8,11 +8,11 @@
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>0FD61912-3723-4800-8990-00D114C7002D</key>
+		<key>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</string>
+				<string>DDD30E91-DD65-4B3D-8246-5F40707ED704</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -21,11 +21,11 @@
 				<false/>
 			</dict>
 		</array>
-		<key>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</key>
+		<key>6C70A43C-B938-40E7-850E-1202D8735400</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>0FD61912-3723-4800-8990-00D114C7002D</string>
+				<string>5A293C53-1025-4A50-9F26-FE27832522B5</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -65,6 +65,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>C3C53F4E-675E-44EF-AB27-2185DE0FD088</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>DDD30E91-DD65-4B3D-8246-5F40707ED704</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -117,49 +130,6 @@
 			<string>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>68</integer>
-				<key>script</key>
-				<string>import sys
-import requests
-import json
-
-query = sys.argv[1]
-cmd = query.strip().lower()
-
-tapi = ('change-me','api_token')
-theader = {"Content-Type": "application/json"}
-
-if cmd == 'stop':
-  r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
-  tid = r.json()["data"]["id"]
-  r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
-  print "Task Stopped"
-elif cmd == 'break':
-  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": "Break", "pid":57765022, "created_with":"alfred"}}))
-  print "In a Break"
-else:
-  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": query, "created_with":"alfred"}}))
-  print "Run: " + query</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>3</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -221,6 +191,58 @@ end run</string>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>8496C0F7-25A4-414F-9C2D-7FEE03A3A403</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>import sys
+import requests
+import json
+
+from workflow import Workflow
+from workflow import PasswordNotFound
+wf = Workflow()
+try:
+  apikey = wf.get_password("toggle API Key")
+except PasswordNotFound:
+  print "Run tm setapikey [api key] to set the API key of Toggle"
+  sys.exit(0)
+
+query = sys.argv[1]
+cmd = query.strip().lower()
+
+tapi = (apikey,'api_token')
+theader = {"Content-Type": "application/json"}
+
+if cmd == 'stop':
+  r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
+  tid = r.json()["data"]["id"]
+  r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
+  print "Task Stopped"
+elif cmd == 'break':
+  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": "Break", "pid":57765022, "created_with":"alfred"}}))
+  print "In a Break"
+else:
+  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": query, "created_with":"alfred"}}))
+  print "Run: " + query</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -295,52 +317,17 @@ end run</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>lastpathcomponent</key>
-				<false/>
-				<key>onlyshowifquerypopulated</key>
-				<true/>
-				<key>removeextension</key>
-				<false/>
-				<key>text</key>
-				<string>{query}</string>
-				<key>title</key>
-				<string>Toggl</string>
+				<key>argument</key>
+				<string>stop</string>
+				<key>variables</key>
+				<dict/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.output.notification</string>
+			<string>alfred.workflow.utility.argument</string>
 			<key>uid</key>
-			<string>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</string>
+			<string>DDD30E91-DD65-4B3D-8246-5F40707ED704</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>68</integer>
-				<key>script</key>
-				<string>import requests
-
-tapi = ('change-me','api_token')
-r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
-tid = r.json()["data"]["id"]
-r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
-print "Task stopped"</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>3</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>0FD61912-3723-4800-8990-00D114C7002D</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -363,6 +350,57 @@ print "Task stopped"</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>from workflow import Workflow
+
+import sys
+
+query = sys.argv[1]
+
+wf = Workflow()
+wf.save_password("toggle API Key", query)</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>5A293C53-1025-4A50-9F26-FE27832522B5</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>tm setapikey</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Set Toggle API Key</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>6C70A43C-B938-40E7-850E-1202D8735400</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>This simple workflow lets you add tasks to to-do lists, using a separate text file for each list.
@@ -376,13 +414,6 @@ To-do lists location: The workflow saves your to-do lists in ~/Documents/Alfred/
 Lists names: These are "Work", "Home" and "Waiting For" by default. You can change them in the List Filter object within the workflow.</string>
 	<key>uidata</key>
 	<dict>
-		<key>0FD61912-3723-4800-8990-00D114C7002D</key>
-		<dict>
-			<key>xpos</key>
-			<integer>370</integer>
-			<key>ypos</key>
-			<integer>460</integer>
-		</dict>
 		<key>1A209714-2C4A-47C7-BAE2-2B838C8EF1CE</key>
 		<dict>
 			<key>xpos</key>
@@ -390,12 +421,19 @@ Lists names: These are "Work", "Home" and "Waiting For" by default. You can chan
 			<key>ypos</key>
 			<integer>460</integer>
 		</dict>
-		<key>7013EACE-BB6D-44EC-99C5-A949A3D14FFA</key>
+		<key>5A293C53-1025-4A50-9F26-FE27832522B5</key>
 		<dict>
 			<key>xpos</key>
-			<integer>580</integer>
+			<integer>370</integer>
 			<key>ypos</key>
-			<integer>460</integer>
+			<integer>620</integer>
+		</dict>
+		<key>6C70A43C-B938-40E7-850E-1202D8735400</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>620</integer>
 		</dict>
 		<key>8496C0F7-25A4-414F-9C2D-7FEE03A3A403</key>
 		<dict>
@@ -407,9 +445,9 @@ Lists names: These are "Work", "Home" and "Waiting For" by default. You can chan
 		<key>C3C53F4E-675E-44EF-AB27-2185DE0FD088</key>
 		<dict>
 			<key>xpos</key>
-			<integer>580</integer>
+			<integer>570</integer>
 			<key>ypos</key>
-			<integer>170</integer>
+			<integer>240</integer>
 		</dict>
 		<key>C5D900E9-15B5-42CF-8E9F-CF0C9A57D0C3</key>
 		<dict>
@@ -423,7 +461,14 @@ Lists names: These are "Work", "Home" and "Waiting For" by default. You can chan
 			<key>xpos</key>
 			<integer>370</integer>
 			<key>ypos</key>
-			<integer>170</integer>
+			<integer>240</integer>
+		</dict>
+		<key>DDD30E91-DD65-4B3D-8246-5F40707ED704</key>
+		<dict>
+			<key>xpos</key>
+			<integer>250</integer>
+			<key>ypos</key>
+			<integer>380</integer>
 		</dict>
 		<key>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</key>
 		<dict>
