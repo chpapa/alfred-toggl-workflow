@@ -47,6 +47,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>87C8C456-632E-4A2B-BEEA-0FEDA8468881</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>C5D900E9-15B5-42CF-8E9F-CF0C9A57D0C3</key>
 		<array>
 			<dict>
@@ -86,19 +99,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>C721EA4B-97FF-4184-81D3-F44BFB265CC6</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Ben Cheng</string>
@@ -113,23 +113,49 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
 				<key>keyword</key>
 				<string>tm</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>python toggl.py "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
 				<key>subtext</key>
 				<string>What's your task?</string>
-				<key>text</key>
+				<key>title</key>
 				<string>Start Tasks</string>
+				<key>type</key>
+				<integer>0</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
+			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</string>
+			<string>87C8C456-632E-4A2B-BEEA-0FEDA8468881</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -202,42 +228,13 @@ end run</string>
 				<key>escaping</key>
 				<integer>68</integer>
 				<key>script</key>
-				<string>import sys
-import requests
-import json
-
-from workflow import Workflow
-from workflow import PasswordNotFound
-wf = Workflow()
-try:
-  apikey = wf.get_password("toggle API Key")
-except PasswordNotFound:
-  print "Run tm setapikey [api key] to set the API key of Toggle"
-  sys.exit(0)
-
-query = sys.argv[1]
-cmd = query.strip().lower()
-
-tapi = (apikey,'api_token')
-theader = {"Content-Type": "application/json"}
-
-if cmd == 'stop':
-  r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
-  tid = r.json()["data"]["id"]
-  r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
-  print "Task Stopped"
-elif cmd == 'break':
-  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": "Break", "pid":57765022, "created_with":"alfred"}}))
-  print "In a Break"
-else:
-  r = requests.post('https://www.toggl.com/api/v8/time_entries/start', auth=tapi, headers=theader,  data=json.dumps({"time_entry":{"description": query, "created_with":"alfred"}}))
-  print "Run: " + query</string>
+				<string>python action.py "{query}"</string>
 				<key>scriptargtype</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>type</key>
-				<integer>3</integer>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
@@ -353,6 +350,27 @@ else:
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>tmauth apikey</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Set Toggle API Key</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>6C70A43C-B938-40E7-850E-1202D8735400</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
@@ -379,27 +397,6 @@ wf.save_password("toggle API Key", query)</string>
 			<string>5A293C53-1025-4A50-9F26-FE27832522B5</string>
 			<key>version</key>
 			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>0</integer>
-				<key>keyword</key>
-				<string>tm setapikey</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Set Toggle API Key</string>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>6C70A43C-B938-40E7-850E-1202D8735400</string>
-			<key>version</key>
-			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -442,6 +439,13 @@ Lists names: These are "Work", "Home" and "Waiting For" by default. You can chan
 			<key>ypos</key>
 			<integer>170</integer>
 		</dict>
+		<key>87C8C456-632E-4A2B-BEEA-0FEDA8468881</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>30</integer>
+		</dict>
 		<key>C3C53F4E-675E-44EF-AB27-2185DE0FD088</key>
 		<dict>
 			<key>xpos</key>
@@ -469,13 +473,6 @@ Lists names: These are "Work", "Home" and "Waiting For" by default. You can chan
 			<integer>250</integer>
 			<key>ypos</key>
 			<integer>380</integer>
-		</dict>
-		<key>E76FC0C3-08D1-4211-AE17-AA25CF3C2614</key>
-		<dict>
-			<key>xpos</key>
-			<integer>50</integer>
-			<key>ypos</key>
-			<integer>30</integer>
 		</dict>
 	</dict>
 	<key>variables</key>
