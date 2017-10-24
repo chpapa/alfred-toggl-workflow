@@ -19,10 +19,6 @@ def main(wf):
                     valid=False,
                     icon=ICON_INFO)
 
-    if not query:
-        wf.send_feedback()
-        return 0
-
     if task_project:
         tasks = sorted(task_project.keys(), key=lambda x: task_project[x]['start'], reverse=True)
         entries = wf.filter(query, tasks, min_score=30)
