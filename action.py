@@ -21,9 +21,21 @@ def main(wf):
 
     if cmd == 'stop':
         r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
-        tid = r.json()["data"]["id"]
-        r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
-        print "Task Stopped"
+        tid = r.json()["data"]
+        if tid is not None:
+            tid = tid['id']
+            r = requests.put('https://www.toggl.com/api/v8/time_entries/' + str(tid) + '/stop', auth=tapi)
+            print "Task Stopped"
+            return 0
+        print "No task"
+    elif not cmd:
+        r = requests.get('https://www.toggl.com/api/v8/time_entries/current', auth=tapi)
+        current = r.json()['data']
+        if current is not None:
+            print "Running: " + current["description"]
+        else:
+            print "Nothing is running on Toggl"
+        return 0
     else:
         data = {"time_entry":{"description": query, "created_with":"alfred"}}
 
