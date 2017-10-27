@@ -1,17 +1,18 @@
 from __future__ import print_function
-import httplib2
 import urlparse
 import webbrowser
 import BaseHTTPServer
 import json
 import sys
 import random
+import datetime
+import httplib2
 
+from workflow import Workflow, ICON_INFO
 from apiclient import discovery
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.contrib.keyring_storage import Storage
 
-import datetime
 
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_ID = \
@@ -51,7 +52,7 @@ def get_credentials():
     return credentials
 
 
-def main():
+def main(wf):
     query = None
     if len(sys.argv) > 1:
         query = sys.argv[1]
@@ -74,7 +75,7 @@ def main():
         orderBy='startTime').execute()
     events = eventsResult.get('items', [])
 
-    alfredJSONObj = {"items":[]}
+    alfredObj = []
     if events:
         for event in events:
             if query != None and not event['summary'].startswith(query):
@@ -82,15 +83,25 @@ def main():
             start = event['start'].get('dateTime', event['start'].get('date'))
             start = datetime.datetime.strptime(start.split('+')[0], '%Y-%m-%dT%H:%M:%S')
             start = start.strftime('%I:%M')
-            alfredJSONObj["items"].append(
+            alfredObj.append(
                 {
                     "title": start + " - " + event['summary'],
                     "arg": event['summary'],
-                    "autocomplete": event['summary']
                 }
             )
 
-    print(json.dumps(alfredJSONObj))
+    entries = wf.filter(query, alfredObj, lambda x:x["arg"])
+
+    if not entries:
+        wf.add_item("No such task", valid=False, icon=ICON_INFO)
+        wf.send_feedback()
+        return 0
+
+    for entry in entries:
+        wf.add_item(title=entry["title"], arg=entry["arg"], autocomplete=entry["arg"], valid=True)
+
+    wf.send_feedback()
 
 if __name__ == '__main__':
-    main()
+    wf = Workflow()
+    wf.run(main)

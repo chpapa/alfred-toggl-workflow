@@ -287,7 +287,7 @@
 				<key>runningsubtext</key>
 				<string>Loading from Google Calendar...</string>
 				<key>script</key>
-				<string>python cal_today.py "{query}"</string>
+				<string>python googlecal.py "{query}"</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
