@@ -23,8 +23,8 @@ def main(wf):
         tasks = sorted(task_project.keys(), key=lambda x: task_project[x]['start'], reverse=True)
         entries = wf.filter(query, tasks, min_score=30)
 
+        wf.add_item(query, arg=query, valid=True)
         if not entries:
-            wf.add_item(query, arg=query, valid=True)
             wf.send_feedback()
             return 0
 
